@@ -9,7 +9,7 @@ import {
 } from 'react-bootstrap';
 
 import Auth from '../utils/auth';
-import { saveBook, searchGoogleBooks } from '../utils/API';
+import { searchGoogleBooks } from '../utils/API';
 import { saveBookIds, getSavedBookIds } from '../utils/localStorage';
 import { useMutation } from '@apollo/client';
 import { SAVE_BOOK } from '../utils/mutations';
@@ -19,9 +19,10 @@ const SearchBooks = () => {
   const [searchedBooks, setSearchedBooks] = useState([]);
   // create state for holding our search field data
   const [searchInput, setSearchInput] = useState('');
+  const [savedBookIds, setSavedBookIds] = useState(getSavedBookIds());
 
-  // useMutation hook for SAVE_BOOK mutation
-  const [saveBook] = useMutation(SAVE_BOOK, {
+
+  const [saveBookMutation] = useMutation(SAVE_BOOK, {
     onCompleted: (data) => {
       setSavedBookIds([...savedBookIds, data.saveBook.bookId]);
     }
@@ -60,12 +61,19 @@ const SearchBooks = () => {
   };
 
   // create function to handle saving a book to our database
-  const handleSaveBook = async (bookData) => {
+  const handleSaveBook = async (bookId) => {
+    const bookToSave = searchedBooks.find((book) => book.bookId === bookId);
+    if (!bookToSave) {
+      console.error('Book not found');
+      return;
+    }
+
     try {
-      // Execute the saveBook mutation using the bookData
-      await saveBook({
-        variables: { bookData },
+      await saveBookMutation({
+        variables: { bookData: { ...bookToSave } },
       });
+
+      setSavedBookIds([...savedBookIds, bookId]);
     } catch (error) {
       console.error('Error saving the book:', error);
     }
