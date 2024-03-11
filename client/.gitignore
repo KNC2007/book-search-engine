@@ -1,3 +1,12 @@
+node_modules
+.DS_Store
+.vs_code
+vs_code
+Thumbs.db
+.env
+dist
+package-lock.json
+
 # Logs
 logs
 *.log
