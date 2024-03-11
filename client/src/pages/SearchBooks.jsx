@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
   Container,
   Col,
@@ -10,7 +10,6 @@ import {
 
 import Auth from '../utils/auth';
 import { searchGoogleBooks } from '../utils/API';
-import { saveBookIds, getSavedBookIds } from '../utils/localStorage';
 import { useMutation } from '@apollo/client';
 import { SAVE_BOOK } from '../utils/mutations';
 
@@ -19,32 +18,20 @@ const SearchBooks = () => {
   const [searchedBooks, setSearchedBooks] = useState([]);
   // create state for holding our search field data
   const [searchInput, setSearchInput] = useState('');
-  const [savedBookIds, setSavedBookIds] = useState(getSavedBookIds());
 
-
-  const [saveBookMutation] = useMutation(SAVE_BOOK, {
-    onCompleted: (data) => {
-      setSavedBookIds([...savedBookIds, data.saveBook.bookId]);
-    }
-  });
+  const [saveBookMutation] = useMutation(SAVE_BOOK);
 
   // create method to search for books and set state on form submit
   const handleFormSubmit = async (event) => {
     event.preventDefault();
 
-    if (!searchInput) {
-      return false;
-    }
+    if (!searchInput) return;
 
     try {
       const response = await searchGoogleBooks(searchInput);
-
-      if (!response.ok) {
-        throw new Error('something went wrong!');
-      }
+      if (!response.ok) throw new Error('something went wrong!');
 
       const { items } = await response.json();
-
       const bookData = items.map((book) => ({
         bookId: book.id,
         authors: book.volumeInfo.authors || ['No author to display'],
@@ -62,6 +49,11 @@ const SearchBooks = () => {
 
   // create function to handle saving a book to our database
   const handleSaveBook = async (bookId) => {
+    if (!Auth.loggedIn()) {
+      console.error('You must be logged in to save a book.');
+      return;
+  }
+    
     const bookToSave = searchedBooks.find((book) => book.bookId === bookId);
     if (!bookToSave) {
       console.error('Book not found');
@@ -72,8 +64,6 @@ const SearchBooks = () => {
       await saveBookMutation({
         variables: { bookData: { ...bookToSave } },
       });
-
-      setSavedBookIds([...savedBookIds, bookId]);
     } catch (error) {
       console.error('Error saving the book:', error);
     }

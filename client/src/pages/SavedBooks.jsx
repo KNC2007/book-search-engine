@@ -14,7 +14,7 @@ import Auth from '../utils/auth';
 
 const SavedBooks = () => {
   const { loading, data } = useQuery(GET_ME);
-  const [removeBook] = useMutation(REMOVE_BOOK, {
+  const [removeBookMutation] = useMutation(REMOVE_BOOK, {
     update(cache, { data: { removeBook } }) {
       cache.modify({
         fields: {
@@ -29,15 +29,18 @@ const SavedBooks = () => {
     }
   });
 
+  const userData = data?.me || {};
+
 
   // create function that accepts the book's mongo _id value as param and deletes the book from the database
   const handleDeleteBook = async (bookId) => {
     if (!Auth.loggedIn()) {
+      console.error('You must be logged in to remove a book.');
       return false;
     }
 
     try {
-      await removeBook({
+      await removeBookMutation({
         variables: { bookId },
       });
     } catch (err) {
