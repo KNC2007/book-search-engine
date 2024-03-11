@@ -5,6 +5,8 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import App from './App.jsx'
 import SearchBooks from './pages/SearchBooks'
 import SavedBooks from './pages/SavedBooks'
+import LoginForm from './components/LoginForm.jsx'
+import SignupForm from './components/SignupForm.jsx'
 
 const router = createBrowserRouter([
   {
@@ -15,9 +17,18 @@ const router = createBrowserRouter([
       {
         index: true,
         element: <SearchBooks />
-      }, {
+      }, 
+      {
         path: '/saved',
         element: <SavedBooks />
+      },
+      {
+        path: '/login', 
+        element: <LoginForm />
+      },
+      {
+        path: '/signup', 
+        element: <SignupForm />
       }
     ]
   }

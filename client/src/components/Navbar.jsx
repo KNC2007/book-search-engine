@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Navbar, Nav, Container, Modal, Tab } from 'react-bootstrap';
-import SignUpForm from './SignupForm';
-import LoginForm from './LoginForm';
+import SignUpForm from './SignupForm'; // Ensure this matches the file name exactly
+import LoginForm from './LoginForm'; // Ensure this matches the file name exactly
 
 import Auth from '../utils/auth';
 
@@ -18,8 +18,8 @@ const AppNavbar = () => {
             Google Books Search
           </Navbar.Brand>
           <Navbar.Toggle aria-controls='navbar' />
-          <Navbar.Collapse id='navbar' className='d-flex flex-row-reverse'>
-            <Nav className='ml-auto d-flex'>
+          <Navbar.Collapse id='navbar'>
+            <Nav className='ms-auto'>
               <Nav.Link as={Link} to='/'>
                 Search For Books
               </Nav.Link>
@@ -38,13 +38,12 @@ const AppNavbar = () => {
           </Navbar.Collapse>
         </Container>
       </Navbar>
-      {/* set modal data up */}
+      {/* Modal setup for Login/Sign Up */}
       <Modal
         size='lg'
         show={showModal}
         onHide={() => setShowModal(false)}
         aria-labelledby='signup-modal'>
-        {/* tab container to do either signup or login component */}
         <Tab.Container defaultActiveKey='login'>
           <Modal.Header closeButton>
             <Modal.Title id='signup-modal'>
